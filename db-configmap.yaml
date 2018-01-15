@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mattermost-db
+  labels:
+    name: mattermost-db
+data:
+  username: mattermost
+  password: mattermost
+  init-script: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE USER monitoring;
+        GRANT SELECT ON DATABASE pg_stat_database TO monitoring;
+    EOSQL
