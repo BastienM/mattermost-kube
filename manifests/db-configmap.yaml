@@ -13,5 +13,5 @@ data:
 
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
         CREATE USER prometheus WITH PASSWORD 'prometheus';
-        GRANT SELECT ON DATABASE pg_stat_database TO monitoring;
+        GRANT SELECT ON DATABASE pg_stat_database TO prometheus;
     EOSQL
