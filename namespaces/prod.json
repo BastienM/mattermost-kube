@@ -1,0 +1,10 @@
+{
+  "kind": "Namespace",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "mattermost-prod",
+    "labels": {
+      "name": "production"
+    }
+  }
+}
