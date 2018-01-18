@@ -86,3 +86,19 @@ spec:
             items:
             - key: config
               path: config.json
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: mattermost-app
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: mattermost.minikube
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: mattermost-app
+          servicePort: http
