@@ -71,8 +71,8 @@ spec:
           mountPath: /etc/localtime
         - name: mattermost-app
           mountPath: /mattermost/data/
-        - name: config
-          mountPath: /mattermost/config
+        # - name: config
+        #   mountPath: /mattermost/config
       volumes:
       - name: localtime
         hostPath:
@@ -80,12 +80,12 @@ spec:
       - name: mattermost-app
         persistentVolumeClaim:
           claimName: mattermost-app
-      - name: config
-        configMap:
-            name: mattermost-app
-            items:
-            - key: config
-              path: config.json
+      # - name: config
+      #   configMap:
+      #       name: mattermost-app
+      #       items:
+      #       - key: config
+      #         path: config.json
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
