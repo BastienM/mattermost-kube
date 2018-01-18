@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mattermost-app
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+  - name: https
+    protocol: TCP
+    port: 443
+  selector:
+    app: mattermost-app
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mattermost-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: mattermost-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mattermost-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mattermost-app
+    spec:
+      containers:
+      - image: mattermost/mattermost-prod-app:4.6.0
+        name: mattermost-app
+        env:
+        - name: MM_USERNAME
+          valueFrom:
+              configMapKeyRef:
+                  name: mattermost-db
+                  key: username
+        - name: MM_PASSWORD
+          valueFrom:
+              configMapKeyRef:
+                  name: mattermost-db
+                  key: password
+        - name: MM_DBNAME
+          valueFrom:
+              configMapKeyRef:
+                  name: mattermost-db
+                  key: username
+        - name: DB_HOST
+          value: mattermost-db
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+          name: mattermost-app
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+        - name: mattermost-app
+          mountPath: /mattermost/data/
+        - name: config
+          mountPath: /mattermost/config
+      volumes:
+      - name: localtime
+        hostPath:
+           path: /usr/share/zoneinfo/Europe/Paris
+      - name: mattermost-app
+        persistentVolumeClaim:
+          claimName: mattermost-app
+      - name: config
+        configMap:
+            name: mattermost-app
+            items:
+            - key: config
+              path: config.json
